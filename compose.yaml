@@ -1,0 +1,6 @@
+﻿services:
+  blazorapi:
+    image: blazorapi
+    build:
+      context: .
+      dockerfile: BlazorAPI/Dockerfile
