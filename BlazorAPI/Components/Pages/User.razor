@@ -1,0 +1,90 @@
+﻿@page "/counter"
+@using BlazorAPI.Classes
+@inject ApiService ApiService
+
+<h3>Users</h3>
+
+@if (Users == null)
+{
+    <p>Loading...</p>
+}
+else if (Users.Count == 0)
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Lastname</th>
+            <th>Age</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Name</td>
+                <td>@user.Lastname</td>
+                <td>@user.Age</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+
+}
+
+<div class="pagination">
+    <button class="btn btn-primary" @onclick="LoadPreviousPage" disabled="@IsFirstPage">Previous</button>
+    <span>Page @PageNumber</span>
+    <button class="btn btn-primary" @onclick="LoadNextPage">Next</button>
+</div>
+
+@code {
+    private List<ApiClass.User> Users { get; set; } = new List<ApiClass.User>();
+    private int PageNumber { get; set; } = 1; // Track current page number
+    private const int PageSize = 10; // Optional: specify page size
+    private bool IsFirstPage => PageNumber <= 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            Users = await ApiService.GetUserAsync(PageNumber);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching user data: {ex.Message}");
+            Users = new List<ApiClass.User>();
+        }
+    }
+
+    private async Task LoadNextPage()
+    {
+        PageNumber++;
+        await LoadUsers();
+    }
+
+    private async Task LoadPreviousPage()
+    {
+        if (PageNumber > 1)
+        {
+            PageNumber--;
+            await LoadUsers();
+        }
+    }
+}

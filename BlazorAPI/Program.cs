@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Register HttpClient for dependency injection
+builder.Services.AddHttpClient<ApiService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -17,7 +20,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 
 app.UseAntiforgery();
 
